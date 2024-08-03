@@ -1,6 +1,6 @@
 import express, { NextFunction, Request, Response } from 'express';
 import cors from 'cors';
-// import countryRoutes from './routes/countryRoutes';
+import countryRoutes from './routes/countryRoute';
 
 // Create an instance of Express
 const app = express();
@@ -10,7 +10,7 @@ app.use(cors()); // Enable CORS
 app.use(express.json()); // Parse JSON bodies
 
 // Routes
-// app.use('/api', countryRoutes);
+app.use('/api', countryRoutes);
 
 // Handle 404 errors
 app.use((req, res, next) => {
