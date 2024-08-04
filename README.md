@@ -1,8 +1,8 @@
 # Shortlet
 
-PACKAGES USES 
-# npm install axios cors dotenv express pg pg-hstore sequelize jsonwebtoken bcrypt
-# npm install --save-dev @types/cors @types/express @types/node nodemon sequelize-cli ts-node typescript @types/jsonwebtoken 
+PACKAGES USED
+# npm install axios cors dotenv express pg pg-hstore sequelize jsonwebtoken bcrypt swagger-jsdoc swagger-ui-express redis
+# npm install --save-dev @types/cors @types/express @types/node nodemon sequelize-cli ts-node typescript @types/jsonwebtoken @types/redis
 
 DATABASE SETUP
 1. Generate migrations for creating tables 
@@ -78,4 +78,13 @@ Initial Issues with Null Values on the migrated data:
 
 # Solution: To address this, I conducted a detailed review of the API response structure and compared it with the database schema. This involved updating the mapping logic to ensure that all properties were accurately referenced and assigned. Implemented additional checks and logging to identify and resolve any discrepancies between the data received and the data stored.
 
+
+USING REDIS FOR DATA CACHING
+1. start redis if already installed  - brew services start redis
+2. if redis is not installed - brew install redis
+3. create the testRedis file to test the redis connection 
+    # npx ts-node testRedis
+4. create the redisClient file and run 
+    # redis-server
+5. implemented caching strategy across service layer for optimizing performance 
 
