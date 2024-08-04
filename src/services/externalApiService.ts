@@ -2,6 +2,8 @@ import axios from 'axios';
 import dotenv from 'dotenv';
 import { FetchCountriesResult, ICountry, ILanguageData, IQuery, IRegionData, IStatistics } from '../interfaces';
 import Country from '../db/models/country';
+import redisClient from '../db/redisClient';
+import { FindOptions } from 'sequelize';
 
 dotenv.config();
 
@@ -91,6 +93,15 @@ const fetchAllCountries = async ({
   population,
 }: IQuery): Promise<FetchCountriesResult> => {
   try {
+    const cacheKey = `countries:${page}:${limit}:${fields || ''}:${region || ''}:${population || ''}`;
+    
+    const cachedData = await redisClient.get(cacheKey);
+    
+    if (cachedData) {
+      console.log('Returning data from cache');
+      return JSON.parse(cachedData);
+    }
+    
     // Calculate the range for pagination
     const start = (page - 1) * limit;
     const end = start + limit;
@@ -133,14 +144,18 @@ const fetchAllCountries = async ({
     const nextPage = page < totalNumberOfPages ? page + 1 : null;
 
     // Return the paginated data and pagination info
-    return {
+    const result = {
       totalCount,
       totalNumberOfPages,
       currentPage: page,
       nextPage,
-      itemsPerPage: limit, // Include items per page in the response
+      itemsPerPage: limit, 
       data: paginatedData,
     };
+
+    await redisClient.set(cacheKey, JSON.stringify(result), { EX: 3600 }); // Cache for 1 hour
+    
+    return result;
   } catch (error: any) {
     console.error('Error fetching data from REST Countries API:', error.message);
     throw new Error('Error fetching data from REST Countries API');
@@ -149,9 +164,21 @@ const fetchAllCountries = async ({
 
 const fetchCountryDetails = async (code: string): Promise<any> => {
   try {
+    const cacheKey = `country:${code}`;
+    const cachedData = await redisClient.get(cacheKey);
+
+    if (cachedData) {
+      console.log('Returning country details from cache');
+      return JSON.parse(cachedData);
+    }
+
     let url = `${API_URL}/alpha/${code}`;
     const response = await axios.get(url);
-    return response.data;
+    const data = response.data;
+
+    await redisClient.set(cacheKey, JSON.stringify(data), { EX: 3600 }); // Cache for 1 hour
+
+    return data;
   } catch (error: any) {
     console.error('Error fetching country details from REST Countries API:', error.message);
     throw new Error('Error fetching country details from REST Countries API');
@@ -160,6 +187,15 @@ const fetchCountryDetails = async (code: string): Promise<any> => {
 
 const getRegions = async ({ page, limit }: { page?:number, limit?: number }): Promise<IRegionData[]> => {
   try {
+    const cacheKey = `regions:${page}:${limit}`;
+
+    const cachedData = await redisClient.get(cacheKey);
+
+    if (cachedData) {
+      console.log('Returning region data from cache');
+      return JSON.parse(cachedData);
+    }
+
     const { data: countries } = await fetchAllCountries({ page: page, limit: limit });
 
     // Initialize a map to hold region data
@@ -180,7 +216,12 @@ const getRegions = async ({ page, limit }: { page?:number, limit?: number }): Pr
       regionMap[region].totalPopulation += population;
     });
 
-    return Object.values(regionMap);
+    const result = Object.values(regionMap);
+    console.log({ result })
+
+    await redisClient.set(cacheKey, JSON.stringify(result), { EX: 3600 }); // Cache for 1 hour
+
+    return result;
   } catch (error: any) {
     console.error('Error fetching and processing countries data:', error.message);
     throw new Error('Error fetching and processing countries data');
@@ -189,6 +230,16 @@ const getRegions = async ({ page, limit }: { page?:number, limit?: number }): Pr
 
 const getLanguagesData = async ({ page, limit }: { page?:number, limit?: number }): Promise<ILanguageData[]> => {
   try {
+    const cacheKey = `languages:${page}:${limit}`;
+
+    const cachedData = await redisClient.get(cacheKey);
+    console.log(`Cached data for key ${cacheKey}: ${cachedData}`);
+
+    if (cachedData) {
+      console.log('Returning language data from cache');
+      return JSON.parse(cachedData);
+    }
+
     const { data: countries } = await fetchAllCountries({ page, limit });
 
     const languageMap: { [language: string]: ILanguageData } = {};
@@ -217,9 +268,18 @@ const getLanguagesData = async ({ page, limit }: { page?:number, limit?: number 
   }
 };
 
-const getStatistics = async ({ page, limit }: { page?:number, limit?: number }): Promise<IStatistics> => {
+const getStatistics = async ({ page, limit }: { page?: number; limit?: number }): Promise<IStatistics> => {
   try {
-    const {data: countries} = await fetchAllCountries({ page, limit  });
+    const cacheKey = `statistics:${page}:${limit}`;
+
+    const cachedData = await redisClient.get(cacheKey);
+
+    if (cachedData) {
+      console.log('Returning statistics data from cache');
+      return JSON.parse(cachedData);
+    }
+
+    const { data: countries } = await fetchAllCountries({ page, limit });
 
     // Initialize statistics
     const statistics: IStatistics = {
@@ -264,6 +324,9 @@ const getStatistics = async ({ page, limit }: { page?:number, limit?: number }):
 
     statistics.mostWidelySpokenLanguage = mostWidelySpokenLanguage.totalSpeakers > 0 ? mostWidelySpokenLanguage : null;
 
+    await redisClient.set(cacheKey, JSON.stringify(statistics), { EX: 3600 }); 
+
+    console.log('Statistics data has been cached');
     return statistics;
   } catch (error: any) {
     console.error('Error processing statistics data:', error.message);
