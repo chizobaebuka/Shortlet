@@ -1,6 +1,7 @@
 import express, { NextFunction, Request, Response } from 'express';
 import cors from 'cors';
 import countryRoutes from './routes/countryRoute';
+import authRoutes from './routes/authRoute'
 
 // Create an instance of Express
 const app = express();
@@ -11,6 +12,7 @@ app.use(express.json()); // Parse JSON bodies
 
 // Routes
 app.use('/api', countryRoutes);
+app.use('/api/auth', authRoutes);
 
 // Handle 404 errors
 app.use((req, res, next) => {
