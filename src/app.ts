@@ -1,7 +1,10 @@
 import express, { NextFunction, Request, Response } from 'express';
 import cors from 'cors';
-import countryRoutes from './routes/countryRoute';
-import authRoutes from './routes/authRoute'
+import countryRoutes from './routes/country.route';
+import authRoutes from './routes/auth.route';
+import swaggerUi from 'swagger-ui-express';
+// import swaggerSpec from './db/swagger';
+import swaggerDocument from './db/swagger-output.json';
 
 // Create an instance of Express
 const app = express();
@@ -9,6 +12,8 @@ const app = express();
 // Middleware
 app.use(cors()); // Enable CORS
 app.use(express.json()); // Parse JSON bodies
+
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 
 // Routes
 app.use('/api', countryRoutes);
