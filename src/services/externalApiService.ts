@@ -4,6 +4,7 @@ import { FetchCountriesResult, ICountry, ILanguageData, IQuery, IRegionData, ISt
 import Country from '../db/models/country';
 import redisClient from '../db/redisClient';
 import { FindOptions } from 'sequelize';
+import logger from '../utils/logger';
 
 dotenv.config();
 
@@ -217,7 +218,6 @@ const getRegions = async ({ page, limit }: { page?:number, limit?: number }): Pr
     });
 
     const result = Object.values(regionMap);
-    console.log({ result })
 
     await redisClient.set(cacheKey, JSON.stringify(result), { EX: 3600 }); // Cache for 1 hour
 
@@ -228,15 +228,15 @@ const getRegions = async ({ page, limit }: { page?:number, limit?: number }): Pr
   }
 };
 
-const getLanguagesData = async ({ page, limit }: { page?:number, limit?: number }): Promise<ILanguageData[]> => {
+const getLanguagesData = async ({ page, limit }: { page?: number, limit?: number }): Promise<ILanguageData[]> => {
   try {
     const cacheKey = `languages:${page}:${limit}`;
+    logger.info('Cache key generated', { cacheKey });
 
     const cachedData = await redisClient.get(cacheKey);
-    console.log(`Cached data for key ${cacheKey}: ${cachedData}`);
 
     if (cachedData) {
-      console.log('Returning language data from cache');
+      logger.info('Returning data from cache', { cacheKey });
       return JSON.parse(cachedData);
     }
 
@@ -261,9 +261,14 @@ const getLanguagesData = async ({ page, limit }: { page?:number, limit?: number 
       }
     });
 
-    return Object.values(languageMap);
+    const result = Object.values(languageMap);
+
+    // Optional: Cache the result
+    await redisClient.set(cacheKey, JSON.stringify(result), { EX: 3600 }); // Cache for 1 hour
+
+    return result;
   } catch (error: any) {
-    console.error('Error processing language data:', error.message);
+    logger.error('Error processing language data', { error: error.message });
     throw new Error('Error processing language data');
   }
 };
