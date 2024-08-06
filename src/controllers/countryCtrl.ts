@@ -1,5 +1,6 @@
 import { Request, Response } from "express";
 import externalApiService from "../services/externalApiService";
+import logger from "../utils/logger";
 
 class CountryController {
   async migrateDatatoDB(req: Request, res: Response) {
@@ -33,6 +34,8 @@ class CountryController {
         population,
       });
 
+      logger.info('Fetched countries data successfully')
+      
       res.status(200).json(countries);
     } catch (err: any) {
       console.error("Error fetching countries", err);
@@ -46,6 +49,8 @@ class CountryController {
     try {
       const code = req.params.code;
       const country = await externalApiService.fetchCountryDetails(code);
+
+      logger.info(`Fetched country information by code: ${code}`, { country });
 
       if (!country || country.length === 0) {
         res.status(404).json({ message: "Country not found" });
@@ -67,13 +72,14 @@ class CountryController {
       const limit = Number(req.query.limit) || 10;
 
       const regionsData = await externalApiService.getRegions({ page, limit });
+      logger.info('Successfully fetched regions data', { regionsData });
 
       return res.status(200).json({
         message: "Regions data fetched successfully",
         data: regionsData,
       });
     } catch (err: any) {
-      console.error("Error fetching regions data:", err.message);
+      logger.error('Error fetching regions data', { error: err.message });
       return res.status(500).json({
         message: "Error fetching regions data",
         error: err.message,
@@ -90,13 +96,14 @@ class CountryController {
         page,
         limit,
       });
+      logger.info('Successfully fetched languages data', { languagesData });
 
       return res.status(200).json({
         message: "Languages data fetched successfully",
         data: languagesData,
       });
     } catch (err: any) {
-      console.error("Error fetching languages data:", err.message);
+      logger.error("Error fetching languages data:", { error: err.message });
       return res.status(500).json({
         message: "Error fetching languages data",
         error: err.message,
@@ -113,11 +120,13 @@ class CountryController {
         page,
         limit,
       });
+      logger.info(`statisticsData fetched successfully`, { statisticsData })
 
       return res.status(200).json({
         message: "Statistics data fetched successfully",
         data: statisticsData,
       });
+      
     } catch (err: any) {
       console.error("Error fetching statistics data:", err.message);
       return res.status(500).json({

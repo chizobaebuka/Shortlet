@@ -38,7 +38,7 @@ export const signupUser = async (req: Request<{}, {}, ISignupRequest>, res: Resp
         const newUser = await User.create(user);
         res.status(201).json(newUser);
     } catch (err: any) {
-        res.status(400).json({ error: err.message });
+        res.status(500).json({ error: err.message });
     }
 };
 

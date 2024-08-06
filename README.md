@@ -88,3 +88,7 @@ USING REDIS FOR DATA CACHING
     redis-server
 5. implemented caching strategy across service layer for optimizing performance 
 
+IMPLEMENTING LOGGING
+1. install npm install winston morgan
+2. create the logger file and configure the logger
+3. implemented logging across the service layer for debugging and monitoring purposes

@@ -1,0 +1,109 @@
+2024-08-05T02:38:40.555Z [info]: Fetching statistics data - Page: 1, Limit: 10
+2024-08-05T02:38:43.143Z [info]: ::1 - - [05/Aug/2024:02:38:43 +0000] "GET /api/countries?region=Antarctic HTTP/1.1" 200 17082 "-" "PostmanRuntime/7.36.3"
+2024-08-05T12:05:52.671Z [info]: Fetching statistics data - Page: 1, Limit: 10
+2024-08-05T12:05:56.326Z [info]: Data fetched from API
+2024-08-05T12:05:56.331Z [info]: Data cached with key:
+2024-08-05T12:05:56.335Z [info]: ::1 - - [05/Aug/2024:12:05:56 +0000] "GET /api/countries?region=Antarctic HTTP/1.1" 200 17082 "-" "PostmanRuntime/7.36.3"
+2024-08-05T12:07:18.207Z [info]: Fetching statistics data - Page: 1, Limit: 10
+2024-08-05T12:07:18.217Z [info]: Cache hit: Returning data from cache
+2024-08-05T12:07:18.221Z [info]: ::1 - - [05/Aug/2024:12:07:18 +0000] "GET /api/countries?region=Antarctic HTTP/1.1" 200 17082 "-" "PostmanRuntime/7.36.3"
+2024-08-05T12:08:04.708Z [info]: Fetching statistics data - Page: 1, Limit: 10
+2024-08-05T12:08:04.714Z [info]: Cache hit: Returning data from cache
+2024-08-05T12:08:04.718Z [info]: ::1 - - [05/Aug/2024:12:08:04 +0000] "GET /api/countries?region=Antarctic HTTP/1.1" 200 17082 "-" "PostmanRuntime/7.36.3"
+2024-08-05T12:11:01.373Z [info]: ::1 - - [05/Aug/2024:12:11:01 +0000] "GET /api/countries/694 HTTP/1.1" 403 21 "-" "PostmanRuntime/7.36.3"
+2024-08-05T12:17:11.316Z [info]: ::1 - - [05/Aug/2024:12:17:11 +0000] "GET /api/countries/694 HTTP/1.1" 403 21 "-" "PostmanRuntime/7.36.3"
+2024-08-05T12:17:28.163Z [info]: ::1 - - [05/Aug/2024:12:17:28 +0000] "POST /api/auth/login HTTP/1.1" 200 286 "-" "PostmanRuntime/7.36.3"
+2024-08-05T12:17:40.011Z [info]: Fetched country information by code: 694
+2024-08-05T12:17:40.013Z [info]: ::1 - - [05/Aug/2024:12:17:40 +0000] "GET /api/countries/694 HTTP/1.1" 200 3261 "-" "PostmanRuntime/7.36.3"
+2024-08-05T12:19:33.891Z [info]: Fetched country information by code: 694
+2024-08-05T12:19:33.899Z [info]: ::1 - - [05/Aug/2024:12:19:33 +0000] "GET /api/countries/694 HTTP/1.1" 200 3261 "-" "PostmanRuntime/7.36.3"
+2024-08-05T12:22:29.702Z [info]: ::1 - - [05/Aug/2024:12:22:29 +0000] "GET /api/regions HTTP/1.1" 403 21 "-" "PostmanRuntime/7.36.3"
+2024-08-05T12:22:48.016Z [info]: ::1 - - [05/Aug/2024:12:22:48 +0000] "POST /api/auth/login HTTP/1.1" 200 286 "-" "PostmanRuntime/7.36.3"
+2024-08-05T12:23:00.858Z [info]: Data cached with key:
+2024-08-05T12:23:00.863Z [info]: Successfully fetched regions data
+2024-08-05T12:23:00.865Z [info]: ::1 - - [05/Aug/2024:12:23:00 +0000] "GET /api/regions HTTP/1.1" 200 32807 "-" "PostmanRuntime/7.36.3"
+2024-08-05T12:23:08.857Z [info]: Cache hit: Returning data from cache
+2024-08-05T12:23:08.859Z [info]: Successfully fetched languages data
+2024-08-05T12:23:08.860Z [info]: ::1 - - [05/Aug/2024:12:23:08 +0000] "GET /api/languages HTTP/1.1" 200 3094 "-" "PostmanRuntime/7.36.3"
+2024-08-05T12:24:40.083Z [info]: Attempting to retrieve cached data for key languages:1:10
+2024-08-05T12:24:40.087Z [info]: No cached data found for key languages:1:10
+2024-08-05T12:24:40.088Z [info]: Cache hit: Returning data from cache
+2024-08-05T12:24:40.089Z [info]: Data retrieved from fetchAllCountries
+2024-08-05T12:24:40.090Z [info]: Successfully fetched languages data
+2024-08-05T12:24:40.094Z [info]: ::1 - - [05/Aug/2024:12:24:40 +0000] "GET /api/languages HTTP/1.1" 200 3094 "-" "PostmanRuntime/7.36.3"
+2024-08-05T12:25:38.148Z [info]: Cache hit: Returning data from cache
+2024-08-05T12:25:38.155Z [info]: Data retrieved from fetchAllCountries
+2024-08-05T12:25:38.155Z [info]: Successfully fetched languages data
+2024-08-05T12:25:38.159Z [info]: ::1 - - [05/Aug/2024:12:25:38 +0000] "GET /api/languages HTTP/1.1" 200 3094 "-" "PostmanRuntime/7.36.3"
+2024-08-05T12:26:05.768Z [info]: Cache hit: Returning data from cache
+2024-08-05T12:26:05.770Z [info]: Data retrieved from fetchAllCountries
+2024-08-05T12:26:05.771Z [info]: Successfully fetched languages data
+2024-08-05T12:26:05.773Z [info]: ::1 - - [05/Aug/2024:12:26:05 +0000] "GET /api/languages HTTP/1.1" 200 3094 "-" "PostmanRuntime/7.36.3"
+2024-08-05T12:28:32.026Z [info]: Cache hit: Returning data from cache
+2024-08-05T12:28:32.030Z [info]: Data retrieved from fetchAllCountries
+2024-08-05T12:28:32.031Z [info]: Successfully fetched languages data
+2024-08-05T12:28:32.035Z [info]: ::1 - - [05/Aug/2024:12:28:32 +0000] "GET /api/languages HTTP/1.1" 200 3094 "-" "PostmanRuntime/7.36.3"
+2024-08-05T18:45:07.602Z [info]: Data cached with key:
+2024-08-05T18:45:07.612Z [info]: Data retrieved from fetchAllCountries
+2024-08-05T18:45:07.612Z [info]: Successfully fetched languages data
+2024-08-05T18:45:07.614Z [info]: ::1 - - [05/Aug/2024:18:45:07 +0000] "GET /api/languages HTTP/1.1" 200 3094 "-" "PostmanRuntime/7.36.3"
+2024-08-05T18:47:56.180Z [info]: Data retrieved from fetchAllCountries
+2024-08-05T18:47:56.188Z [info]: Successfully fetched languages data
+2024-08-05T18:47:56.190Z [info]: ::1 - - [05/Aug/2024:18:47:56 +0000] "GET /api/languages HTTP/1.1" 200 3094 "-" "PostmanRuntime/7.36.3"
+2024-08-05T18:48:53.699Z [info]: Data retrieved from fetchAllCountries
+2024-08-05T18:48:53.702Z [info]: Successfully fetched languages data
+2024-08-05T18:48:53.706Z [info]: ::1 - - [05/Aug/2024:18:48:53 +0000] "GET /api/languages HTTP/1.1" 200 3094 "-" "PostmanRuntime/7.36.3"
+2024-08-05T18:51:12.155Z [info]: Data retrieved from fetchAllCountries
+2024-08-05T18:51:12.158Z [info]: Successfully fetched languages data
+2024-08-05T18:51:12.161Z [info]: ::1 - - [05/Aug/2024:18:51:12 +0000] "GET /api/languages HTTP/1.1" 200 3094 "-" "PostmanRuntime/7.36.3"
+2024-08-05T20:53:06.692Z [info]: ::1 - - [05/Aug/2024:20:53:06 +0000] "GET /api/statistics HTTP/1.1" 403 21 "-" "PostmanRuntime/7.36.3"
+2024-08-05T20:53:08.084Z [info]: ::1 - - [05/Aug/2024:20:53:08 +0000] "GET /api/statistics HTTP/1.1" 403 21 "-" "PostmanRuntime/7.36.3"
+2024-08-05T20:54:36.493Z [info]: ::1 - - [05/Aug/2024:20:54:36 +0000] "GET /api-docs/ HTTP/1.1" 304 - "-" "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36"
+2024-08-05T20:54:36.533Z [info]: ::1 - - [05/Aug/2024:20:54:36 +0000] "GET /api-docs/swagger-ui.css HTTP/1.1" 304 - "http://localhost:8080/api-docs/" "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36"
+2024-08-05T20:54:36.536Z [info]: ::1 - - [05/Aug/2024:20:54:36 +0000] "GET /api-docs/swagger-ui-init.js HTTP/1.1" 304 - "http://localhost:8080/api-docs/" "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36"
+2024-08-05T20:54:36.537Z [info]: ::1 - - [05/Aug/2024:20:54:36 +0000] "GET /api-docs/swagger-ui-standalone-preset.js HTTP/1.1" 304 - "http://localhost:8080/api-docs/" "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36"
+2024-08-05T20:54:36.545Z [info]: ::1 - - [05/Aug/2024:20:54:36 +0000] "GET /api-docs/swagger-ui-bundle.js HTTP/1.1" 200 1452753 "http://localhost:8080/api-docs/" "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36"
+2024-08-05T20:54:43.964Z [info]: ::1 - - [05/Aug/2024:20:54:43 +0000] "GET /api/statistics?page=1&limit=10 HTTP/1.1" 401 29 "http://localhost:8080/api-docs/" "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36"
+2024-08-05T20:54:50.929Z [info]: ::1 - - [05/Aug/2024:20:54:50 +0000] "POST /api/auth/login HTTP/1.1" 200 263 "http://localhost:8080/api-docs/" "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36"
+2024-08-05T20:54:52.368Z [info]: ::1 - - [05/Aug/2024:20:54:52 +0000] "POST /api/auth/login HTTP/1.1" 200 263 "http://localhost:8080/api-docs/" "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36"
+2024-08-05T20:55:13.414Z [info]: Data cached successfully with key: countries:1:10:::
+2024-08-05T20:55:13.417Z [info]: statisticsData fetched successfully
+2024-08-05T20:55:13.418Z [info]: ::1 - - [05/Aug/2024:20:55:13 +0000] "GET /api/statistics?page=1&limit=10 HTTP/1.1" 304 - "http://localhost:8080/api-docs/" "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36"
+2024-08-05T21:01:20.335Z [info]: ::1 - - [05/Aug/2024:21:01:20 +0000] "GET /api/countries HTTP/1.1" 403 21 "-" "PostmanRuntime/7.36.3"
+2024-08-05T21:01:27.761Z [info]: Data cached successfully with key: countries:1:10::Antarctic:
+2024-08-05T21:01:27.762Z [info]: Fetched countries data successfully
+2024-08-05T21:01:27.764Z [info]: ::1 - - [05/Aug/2024:21:01:27 +0000] "GET /api/countries?region=Antarctic HTTP/1.1" 200 17082 "-" "PostmanRuntime/7.36.3"
+2024-08-05T21:01:28.031Z [info]: ::1 - - [05/Aug/2024:21:01:28 +0000] "POST /api/auth/login HTTP/1.1" 200 286 "-" "PostmanRuntime/7.36.3"
+2024-08-05T21:01:40.875Z [info]: Fetched countries data successfully
+2024-08-05T21:01:40.877Z [info]: ::1 - - [05/Aug/2024:21:01:40 +0000] "GET /api/countries?region=Antarctic HTTP/1.1" 200 17082 "-" "PostmanRuntime/7.36.3"
+2024-08-05T21:02:17.229Z [info]: Fetched country information by code: 694
+2024-08-05T21:02:17.233Z [info]: ::1 - - [05/Aug/2024:21:02:17 +0000] "GET /api/countries/694 HTTP/1.1" 200 3261 "-" "PostmanRuntime/7.36.3"
+2024-08-05T21:02:47.836Z [info]: Successfully fetched regions data
+2024-08-05T21:02:47.838Z [info]: ::1 - - [05/Aug/2024:21:02:47 +0000] "GET /api/regions HTTP/1.1" 200 32807 "-" "PostmanRuntime/7.36.3"
+2024-08-05T21:11:19.044Z [info]: Successfully fetched regions data
+2024-08-05T21:11:19.053Z [info]: ::1 - - [05/Aug/2024:21:11:19 +0000] "GET /api/regions HTTP/1.1" 200 32807 "-" "PostmanRuntime/7.36.3"
+2024-08-05T21:11:53.703Z [info]: Data retrieved from fetchAllCountries
+2024-08-05T21:11:53.706Z [info]: Successfully fetched languages data
+2024-08-05T21:11:53.708Z [info]: ::1 - - [05/Aug/2024:21:11:53 +0000] "GET /api/languages HTTP/1.1" 200 3094 "-" "PostmanRuntime/7.36.3"
+2024-08-05T21:12:40.500Z [info]: Data retrieved from fetchAllCountries
+2024-08-05T21:12:40.503Z [info]: Successfully fetched languages data
+2024-08-05T21:12:40.508Z [info]: ::1 - - [05/Aug/2024:21:12:40 +0000] "GET /api/languages HTTP/1.1" 200 3094 "-" "PostmanRuntime/7.36.3"
+2024-08-05T21:13:39.390Z [info]: Cache key generated
+2024-08-05T21:13:39.394Z [info]: Cache miss, fetching data from fetchAllCountries
+2024-08-05T21:13:39.396Z [info]: Data retrieved from fetchAllCountries
+2024-08-05T21:13:39.396Z [info]: Languages data processed successfully
+2024-08-05T21:13:39.398Z [info]: Data cached successfully
+2024-08-05T21:13:39.398Z [info]: Successfully fetched languages data
+2024-08-05T21:13:39.402Z [info]: ::1 - - [05/Aug/2024:21:13:39 +0000] "GET /api/languages HTTP/1.1" 200 3094 "-" "PostmanRuntime/7.36.3"
+2024-08-05T21:14:23.632Z [info]: Cache key generated
+2024-08-05T21:14:23.655Z [info]: Returning data from cache
+2024-08-05T21:14:23.656Z [info]: Successfully fetched languages data
+2024-08-05T21:14:23.660Z [info]: ::1 - - [05/Aug/2024:21:14:23 +0000] "GET /api/languages HTTP/1.1" 200 3094 "-" "PostmanRuntime/7.36.3"
+2024-08-05T21:14:45.011Z [info]: Cache key generated
+2024-08-05T21:14:45.014Z [info]: Returning data from cache
+2024-08-05T21:14:45.014Z [info]: Successfully fetched languages data
+2024-08-05T21:14:45.017Z [info]: ::1 - - [05/Aug/2024:21:14:45 +0000] "GET /api/languages HTTP/1.1" 200 3094 "-" "PostmanRuntime/7.36.3"
+2024-08-05T21:16:14.665Z [info]: ::1 - - [05/Aug/2024:21:16:14 +0000] "GET /api/statistics HTTP/1.1" 403 21 "-" "PostmanRuntime/7.36.3"
+2024-08-05T21:16:22.540Z [info]: ::1 - - [05/Aug/2024:21:16:22 +0000] "POST /api/auth/login HTTP/1.1" 200 286 "-" "PostmanRuntime/7.36.3"
+2024-08-05T21:16:32.019Z [info]: statisticsData fetched successfully
+2024-08-05T21:16:32.021Z [info]: ::1 - - [05/Aug/2024:21:16:32 +0000] "GET /api/statistics HTTP/1.1" 200 599 "-" "PostmanRuntime/7.36.3"

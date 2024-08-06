@@ -1,0 +1,1870 @@
+{
+    "openapi": "3.0.0",
+    "info": {
+        "version": "1.0.0",
+        "title": "Shortlet API",
+        "description": "Shortlet API Documentation"
+    },
+    "servers": [
+        {
+            "url": "http://localhost:8080",
+            "description": "Local server"
+        }
+    ],
+    "tags": [
+        {
+            "name": "User",
+            "description": "Operations related to users"
+        },
+        {
+            "name": "Country",
+            "description": "Operations related to countries"
+        }
+    ],
+    "paths": {
+        "/api/auth/create": {
+            "post": {
+                "summary": "Sign Up User API",
+                "description": "Create a new user with the provided information.",
+                "tags": ["User"],
+                "requestBody": {
+                    "description": "User information required for signup",
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object",
+                                "properties": {
+                                    "username": {
+                                        "type": "string",
+                                        "description": "The username of the user"
+                                    },
+                                    "email": {
+                                        "type": "string",
+                                        "format": "email",
+                                        "description": "The email address of the user"
+                                    },
+                                    "password": {
+                                        "type": "string",
+                                        "description": "The password for the user account"
+                                    },
+                                    "role": {
+                                        "type": "string",
+                                        "enum": ["admin", "user"],
+                                        "description": "The role of the user"
+                                    }
+                                },
+                                "required": ["username", "email", "password"]
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "User created successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "id": {
+                                            "type": "integer",
+                                            "description": "The unique identifier of the user"
+                                        },
+                                        "username": {
+                                            "type": "string",
+                                            "description": "The username of the user"
+                                        },
+                                        "email": {
+                                            "type": "string",
+                                            "format": "email",
+                                            "description": "The email address of the user"
+                                        },
+                                        "role": {
+                                            "type": "string",
+                                            "enum": ["admin", "user"],
+                                            "description": "The role of the user"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request - Validation failed or user already exists",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "error": {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "object",
+                                                "properties": {
+                                                    "message": {
+                                                        "type": "string"
+                                                    },
+                                                    "path": {
+                                                        "type": "string"
+                                                    }
+                                                }
+                                            },
+                                            "description": "Validation errors"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error - Unexpected error occurred",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "error": {
+                                            "type": "string",
+                                            "description": "Error message"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },        
+        "/api/auth/login": {
+            "post": {
+                "summary": "Login User API",
+                "description": "Log in a user and return a JWT token along with user details.",
+                "tags": ["User"],
+                "requestBody": {
+                    "description": "User credentials for login",
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object",
+                                "properties": {
+                                    "email": {
+                                        "type": "string",
+                                        "format": "email",
+                                        "description": "The email address of the user"
+                                    },
+                                    "password": {
+                                        "type": "string",
+                                        "description": "The password for the user account"
+                                    }
+                                },
+                                "required": ["email", "password"]
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Successful login and token generation",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "token": {
+                                            "type": "string",
+                                            "description": "JWT token for authenticated requests"
+                                        },
+                                        "user": {
+                                            "type": "object",
+                                            "properties": {
+                                                "id": {
+                                                    "type": "integer",
+                                                    "description": "The unique identifier of the user"
+                                                },
+                                                "username": {
+                                                    "type": "string",
+                                                    "description": "The username of the user"
+                                                },
+                                                "email": {
+                                                    "type": "string",
+                                                    "format": "email",
+                                                    "description": "The email address of the user"
+                                                },
+                                                "role": {
+                                                    "type": "string",
+                                                    "enum": ["admin", "user"],
+                                                    "description": "The role of the user"
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized - Invalid email or password",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "error": {
+                                            "type": "string",
+                                            "description": "Error message indicating invalid credentials"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error - Unexpected error occurred",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "error": {
+                                            "type": "string",
+                                            "description": "Error message indicating an internal server error"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },        
+        "/api/auth/": {
+            "get": {
+                "summary": "Get All Users",
+                "description": "Retrieve a list of all users.",
+                "tags": ["User"],
+                "responses": {
+                    "200": {
+                        "description": "Successful retrieval of all users",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "type": "object",
+                                        "properties": {
+                                            "id": {
+                                                "type": "integer",
+                                                "description": "The unique identifier of the user"
+                                            },
+                                            "username": {
+                                                "type": "string",
+                                                "description": "The username of the user"
+                                            },
+                                            "email": {
+                                                "type": "string",
+                                                "format": "email",
+                                                "description": "The email address of the user"
+                                            },
+                                            "role": {
+                                                "type": "string",
+                                                "enum": ["admin", "user"],
+                                                "description": "The role of the user"
+                                            },
+                                            "createdAt": {
+                                                "type": "string",
+                                                "format": "date-time",
+                                                "description": "The date and time when the user was created"
+                                            },
+                                            "updatedAt": {
+                                                "type": "string",
+                                                "format": "date-time",
+                                                "description": "The date and time when the user was last updated"
+                                            }
+                                        },
+                                        "required": ["id", "username", "email", "role", "createdAt", "updatedAt"]
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error - Unexpected error occurred",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "error": {
+                                            "type": "string",
+                                            "description": "Error message indicating an internal server error"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },        
+        "/api/auth/logout": {
+            "post": {
+                "summary": "Logout User",
+                "description": "Log out the user by clearing the authentication cookie.",
+                "tags": ["User"],
+                "responses": {
+                    "200": {
+                        "description": "Successful logout, the authentication cookie has been cleared.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "description": "Confirmation message indicating successful logout"
+                                        }
+                                    },
+                                    "required": ["message"]
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error - Unexpected error occurred during logout",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "error": {
+                                            "type": "string",
+                                            "description": "Error message indicating an internal server error"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },        
+        "/api/migrate": {
+            "post": {
+                "summary": "Route to migrate data to db",
+                "description": "Trigger the migration of data from an external API to the database.",
+                "tags": ["Country"],
+                "responses": {
+                    "200": {
+                        "description": "Data migration completed successfully.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "description": "Confirmation message indicating that the data migration was successful"
+                                        }
+                                    },
+                                    "required": ["message"]
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error - Error occurred during data migration.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "description": "Error message indicating that there was an issue with data migration"
+                                        },
+                                        "error": {
+                                            "type": "string",
+                                            "description": "Detailed error message describing the problem"
+                                        }
+                                    },
+                                    "required": ["message", "error"]
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },        
+        "/api/countries": {
+            "get": {
+                "summary": "Get All Countries",
+                "description": "Retrieve a list of countries with optional query parameters for pagination, field selection, region, and population.",
+                "tags": ["Country"],
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ],
+                "parameters": [
+                    {
+                        "name": "page",
+                        "in": "query",
+                        "description": "The page number for pagination.",
+                        "required": false,
+                        "schema": {
+                            "type": "integer",
+                            "default": 1
+                        }
+                    },
+                    {
+                        "name": "limit",
+                        "in": "query",
+                        "description": "The number of countries to retrieve per page.",
+                        "required": false,
+                        "schema": {
+                            "type": "integer",
+                            "default": 10
+                        }
+                    },
+                    {
+                        "name": "fields",
+                        "in": "query",
+                        "description": "Comma-separated list of fields to include in the response.",
+                        "required": false,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "region",
+                        "in": "query",
+                        "description": "Filter countries by region.",
+                        "required": false,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "population",
+                        "in": "query",
+                        "description": "Filter countries by population size.",
+                        "required": false,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful retrieval of countries.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/definitions/Country"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error - Error occurred while fetching countries.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "description": "Error message indicating that there was an issue with fetching countries."
+                                        }
+                                    },
+                                    "required": ["message"]
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },               
+        "/api/countries/{code}": {
+            "get": {
+                "summary": "Get Country Details by code",
+                "description": "Retrieve a list of countries with optional query parameters for pagination, field selection, region, and population.",
+                "tags": ["Country"],
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ],
+                "parameters": [
+                    {
+                        "name": "code",
+                        "in": "query",
+                        "description": "Filter countries by code.",
+                        "required": false,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful retrieval of countries.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "type": "object",
+                                        "properties": {
+                                            "id": {
+                                                "type": "integer",
+                                                "description": "The unique identifier for the country."
+                                            },
+                                            "name": {
+                                                "type": "object",
+                                                "properties": {
+                                                    "common": {
+                                                        "type": "string",
+                                                        "description": "The common name of the country."
+                                                    },
+                                                    "official": {
+                                                        "type": "string",
+                                                        "description": "The official name of the country."
+                                                    },
+                                                    "nativeName": {
+                                                        "type": "object",
+                                                        "description": "The native names of the country in different languages.",
+                                                        "additionalProperties": {
+                                                            "type": "object",
+                                                            "properties": {
+                                                                "official": {
+                                                                    "type": "string",
+                                                                    "description": "The official name in the native language."
+                                                                },
+                                                                "common": {
+                                                                    "type": "string",
+                                                                    "description": "The common name in the native language."
+                                                                }
+                                                            },
+                                                            "required": ["official", "common"]
+                                                        }
+                                                    }
+                                                },
+                                                "required": ["common", "official", "nativeName"]
+                                            },
+                                            "topLevelDomain": {
+                                                "type": "array",
+                                                "items": {
+                                                    "type": "string"
+                                                },
+                                                "description": "The top-level domain of the country."
+                                            },
+                                            "alpha2Code": {
+                                                "type": "string",
+                                                "description": "The 2-letter country code."
+                                            },
+                                            "alpha3Code": {
+                                                "type": "string",
+                                                "description": "The 3-letter country code."
+                                            },
+                                            "callingCodes": {
+                                                "type": "array",
+                                                "items": {
+                                                    "type": "string"
+                                                },
+                                                "description": "The calling codes for the country."
+                                            },
+                                            "capital": {
+                                                "type": "array",
+                                                "items": {
+                                                    "type": "string"
+                                                },
+                                                "description": "The capital city or cities of the country."
+                                            },
+                                            "altSpellings": {
+                                                "type": "array",
+                                                "items": {
+                                                    "type": "string"
+                                                },
+                                                "description": "Alternative spellings of the country name."
+                                            },
+                                            "region": {
+                                                "type": "string",
+                                                "description": "The region where the country is located."
+                                            },
+                                            "subregion": {
+                                                "type": "string",
+                                                "description": "The subregion where the country is located."
+                                            },
+                                            "population": {
+                                                "type": "integer",
+                                                "description": "The population of the country."
+                                            },
+                                            "latlng": {
+                                                "type": "array",
+                                                "items": {
+                                                    "type": "number"
+                                                },
+                                                "description": "Latitude and longitude coordinates of the country."
+                                            },
+                                            "demonym": {
+                                                "type": "object",
+                                                "description": "Demonym for the country in different languages.",
+                                                "additionalProperties": {
+                                                    "type": "object",
+                                                    "properties": {
+                                                        "f": {
+                                                            "type": "string",
+                                                            "description": "The female demonym."
+                                                        },
+                                                        "m": {
+                                                            "type": "string",
+                                                            "description": "The male demonym."
+                                                        }
+                                                    },
+                                                    "required": ["f", "m"]
+                                                }
+                                            },
+                                            "area": {
+                                                "type": "number",
+                                                "description": "The total area of the country."
+                                            },
+                                            "gini": {
+                                                "type": "number",
+                                                "description": "The Gini index of the country."
+                                            },
+                                            "timezones": {
+                                                "type": "array",
+                                                "items": {
+                                                    "type": "string"
+                                                },
+                                                "description": "The timezones of the country."
+                                            },
+                                            "borders": {
+                                                "type": "array",
+                                                "items": {
+                                                    "type": "string"
+                                                },
+                                                "description": "The countries that border the country."
+                                            },
+                                            "nativeName": {
+                                                "type": "object",
+                                                "description": "The native names of the country in different languages.",
+                                                "additionalProperties": {
+                                                    "type": "object",
+                                                    "properties": {
+                                                        "official": {
+                                                            "type": "string",
+                                                            "description": "The official name in the native language."
+                                                        },
+                                                        "common": {
+                                                            "type": "string",
+                                                            "description": "The common name in the native language."
+                                                        }
+                                                    },
+                                                    "required": ["official", "common"]
+                                                }
+                                            },
+                                            "numericCode": {
+                                                "type": "string",
+                                                "description": "The numeric code of the country."
+                                            },
+                                            "currencies": {
+                                                "type": "object",
+                                                "description": "The currencies used in the country.",
+                                                "additionalProperties": {
+                                                    "type": "object",
+                                                    "properties": {
+                                                        "name": {
+                                                            "type": "string",
+                                                            "description": "The name of the currency."
+                                                        },
+                                                        "symbol": {
+                                                            "type": "string",
+                                                            "description": "The symbol of the currency."
+                                                        }
+                                                    },
+                                                    "required": ["name", "symbol"]
+                                                }
+                                            },
+                                            "languages": {
+                                                "type": "object",
+                                                "description": "Languages spoken in the country.",
+                                                "additionalProperties": {
+                                                    "type": "string"
+                                                }
+                                            },
+                                            "translations": {
+                                                "type": "object",
+                                                "description": "Translations of the country name in different languages.",
+                                                "additionalProperties": {
+                                                    "type": "object",
+                                                    "properties": {
+                                                        "official": {
+                                                            "type": "string",
+                                                            "description": "The official name in the translated language."
+                                                        },
+                                                        "common": {
+                                                            "type": "string",
+                                                            "description": "The common name in the translated language."
+                                                        }
+                                                    },
+                                                    "required": ["official", "common"]
+                                                }
+                                            },
+                                            "flag": {
+                                                "type": "string",
+                                                "description": "URL of the country flag image."
+                                            },
+                                            "regionalBlocs": {
+                                                "type": "object",
+                                                "description": "Regional blocs to which the country belongs.",
+                                                "additionalProperties": {
+                                                    "type": "object",
+                                                    "properties": {
+                                                        "acronym": {
+                                                            "type": "string",
+                                                            "description": "The acronym of the regional bloc."
+                                                        },
+                                                        "name": {
+                                                            "type": "string",
+                                                            "description": "The name of the regional bloc."
+                                                        },
+                                                        "otherAcronyms": {
+                                                            "type": "array",
+                                                            "items": {
+                                                                "type": "string"
+                                                            },
+                                                            "description": "Other acronyms used for the regional bloc."
+                                                        },
+                                                        "otherNames": {
+                                                            "type": "array",
+                                                            "items": {
+                                                                "type": "string"
+                                                            },
+                                                            "description": "Other names used for the regional bloc."
+                                                        }
+                                                    },
+                                                    "required": ["acronym", "name"]
+                                                }
+                                            },
+                                            "cioc": {
+                                                "type": "string",
+                                                "description": "The CIOC code for the country."
+                                            },
+                                            "maps": {
+                                                "type": "object",
+                                                "description": "Map URLs for the country.",
+                                                "properties": {
+                                                    "googleMaps": {
+                                                        "type": "string",
+                                                        "description": "Google Maps URL for the country."
+                                                    },
+                                                    "openStreetMaps": {
+                                                        "type": "string",
+                                                        "description": "OpenStreetMaps URL for the country."
+                                                    }
+                                                },
+                                                "required": ["googleMaps", "openStreetMaps"]
+                                            },
+                                            "coatOfArms": {
+                                                "type": "object",
+                                                "description": "Coat of arms of the country."
+                                            },
+                                            "startOfWeek": {
+                                                "type": "string",
+                                                "description": "The start of the week in the country."
+                                            },
+                                            "capitalInfo": {
+                                                "type": "object",
+                                                "description": "Capital city information.",
+                                                "properties": {
+                                                    "latlng": {
+                                                        "type": "array",
+                                                        "items": {
+                                                            "type": "number"
+                                                        },
+                                                        "description": "Latitude and longitude coordinates of the capital city."
+                                                    }
+                                                },
+                                                "required": ["latlng"]
+                                            },
+                                            "continents": {
+                                                "type": "array",
+                                                "items": {
+                                                    "type": "string"
+                                                },
+                                                "description": "Continents the country is part of."
+                                            },
+                                            "car": {
+                                                "type": "object",
+                                                "description": "Car-related information for the country.",
+                                                "properties": {
+                                                    "signs": {
+                                                        "type": "array",
+                                                        "items": {
+                                                            "type": "string"
+                                                        },
+                                                        "description": "Road signs used in the country."
+                                                    },
+                                                    "side": {
+                                                        "type": "string",
+                                                        "description": "The side of the road people drive on."
+                                                    }
+                                                },
+                                                "required": ["signs", "side"]
+                                            },
+                                            "flags": {
+                                                "type": "object",
+                                                "description": "Flag images for the country.",
+                                                "properties": {
+                                                    "png": {
+                                                        "type": "string",
+                                                        "description": "URL of the PNG flag image."
+                                                    },
+                                                    "svg": {
+                                                        "type": "string",
+                                                        "description": "URL of the SVG flag image."
+                                                    }
+                                                },
+                                                "required": ["png", "svg"]
+                                            }
+                                        },
+                                        "required": ["id", "name", "alpha2Code", "alpha3Code", "population", "region", "capital"]
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error - Error occurred while fetching countries.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "description": "Error message indicating that there was an issue with fetching countries."
+                                        }
+                                    },
+                                    "required": ["message"]
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },        
+        "/api/regions": {
+            "get": {
+                "summary": "Aggregated Data of Region List and countries within",
+                "description": "Retrieve a list of regions with detailed information about the countries within each region. Optional pagination is supported.",
+                "tags": ["Country"],
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ],
+                "parameters": [
+                    {
+                        "name": "page",
+                        "in": "query",
+                        "description": "The page number for pagination. Defaults to 1 if not provided.",
+                        "required": false,
+                        "schema": {
+                            "type": "integer",
+                            "default": 1
+                        }
+                    },
+                    {
+                        "name": "limit",
+                        "in": "query",
+                        "description": "The number of regions to retrieve per page. Defaults to 10 if not provided.",
+                        "required": false,
+                        "schema": {
+                            "type": "integer",
+                            "default": 10
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful retrieval of regions data.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "description": "A message indicating the success of the operation."
+                                        },
+                                        "data": {
+                                            "type": "object",
+                                            "properties": {
+                                                "region": {
+                                                    "type": "string",
+                                                    "description": "The name of the region."
+                                                },
+                                                "countries": {
+                                                    "type": "array",
+                                                    "items": {
+                                                        "type": "object",
+                                                        "properties": {
+                                                            "name": {
+                                                                "type": "object",
+                                                                "properties": {
+                                                                    "common": {
+                                                                        "type": "string",
+                                                                        "description": "Common name of the country."
+                                                                    },
+                                                                    "official": {
+                                                                        "type": "string",
+                                                                        "description": "Official name of the country."
+                                                                    },
+                                                                    "nativeName": {
+                                                                        "type": "object",
+                                                                        "additionalProperties": {
+                                                                            "type": "object",
+                                                                            "properties": {
+                                                                                "official": {
+                                                                                    "type": "string",
+                                                                                    "description": "Official name in the native language."
+                                                                                },
+                                                                                "common": {
+                                                                                    "type": "string",
+                                                                                    "description": "Common name in the native language."
+                                                                                }
+                                                                            },
+                                                                            "required": ["official", "common"]
+                                                                        }
+                                                                    }
+                                                                },
+                                                                "required": ["common", "official"]
+                                                            },
+                                                            "tld": {
+                                                                "type": "array",
+                                                                "items": {
+                                                                    "type": "string",
+                                                                    "description": "Top-level domain of the country."
+                                                                }
+                                                            },
+                                                            "cca2": {
+                                                                "type": "string",
+                                                                "description": "2-letter country code."
+                                                            },
+                                                            "ccn3": {
+                                                                "type": "string",
+                                                                "description": "3-digit country code."
+                                                            },
+                                                            "cca3": {
+                                                                "type": "string",
+                                                                "description": "3-letter country code."
+                                                            },
+                                                            "independent": {
+                                                                "type": "boolean",
+                                                                "description": "Whether the country is independent."
+                                                            },
+                                                            "status": {
+                                                                "type": "string",
+                                                                "description": "Status of the country code assignment."
+                                                            },
+                                                            "unMember": {
+                                                                "type": "boolean",
+                                                                "description": "Whether the country is a member of the UN."
+                                                            },
+                                                            "currencies": {
+                                                                "type": "object",
+                                                                "additionalProperties": {
+                                                                    "type": "object",
+                                                                    "properties": {
+                                                                        "name": {
+                                                                            "type": "string",
+                                                                            "description": "Name of the currency."
+                                                                        },
+                                                                        "symbol": {
+                                                                            "type": "string",
+                                                                            "description": "Symbol of the currency."
+                                                                        }
+                                                                    },
+                                                                    "required": ["name", "symbol"]
+                                                                }
+                                                            },
+                                                            "idd": {
+                                                                "type": "object",
+                                                                "properties": {
+                                                                    "root": {
+                                                                        "type": "string",
+                                                                        "description": "International dialing prefix."
+                                                                    },
+                                                                    "suffixes": {
+                                                                        "type": "array",
+                                                                        "items": {
+                                                                            "type": "string",
+                                                                            "description": "Dialing suffixes."
+                                                                        }
+                                                                    }
+                                                                },
+                                                                "required": ["root", "suffixes"]
+                                                            },
+                                                            "capital": {
+                                                                "type": "array",
+                                                                "items": {
+                                                                    "type": "string",
+                                                                    "description": "Capital cities of the country."
+                                                                }
+                                                            },
+                                                            "altSpellings": {
+                                                                "type": "array",
+                                                                "items": {
+                                                                    "type": "string",
+                                                                    "description": "Alternative spellings of the country name."
+                                                                }
+                                                            },
+                                                            "region": {
+                                                                "type": "string",
+                                                                "description": "Region of the country."
+                                                            },
+                                                            "languages": {
+                                                                "type": "object",
+                                                                "additionalProperties": {
+                                                                    "type": "string",
+                                                                    "description": "Languages spoken in the country."
+                                                                }
+                                                            },
+                                                            "translations": {
+                                                                "type": "object",
+                                                                "additionalProperties": {
+                                                                    "type": "object",
+                                                                    "properties": {
+                                                                        "official": {
+                                                                            "type": "string",
+                                                                            "description": "Official name in the translation language."
+                                                                        },
+                                                                        "common": {
+                                                                            "type": "string",
+                                                                            "description": "Common name in the translation language."
+                                                                        }
+                                                                    },
+                                                                    "required": ["official", "common"]
+                                                                }
+                                                            },
+                                                            "latlng": {
+                                                                "type": "array",
+                                                                "items": {
+                                                                    "type": "number",
+                                                                    "description": "Latitude and longitude coordinates of the country."
+                                                                }
+                                                            },
+                                                            "landlocked": {
+                                                                "type": "boolean",
+                                                                "description": "Whether the country is landlocked."
+                                                            },
+                                                            "area": {
+                                                                "type": "number",
+                                                                "description": "Total area of the country."
+                                                            },
+                                                            "demonyms": {
+                                                                "type": "object",
+                                                                "additionalProperties": {
+                                                                    "type": "object",
+                                                                    "properties": {
+                                                                        "f": {
+                                                                            "type": "string",
+                                                                            "description": "Feminine demonym."
+                                                                        },
+                                                                        "m": {
+                                                                            "type": "string",
+                                                                            "description": "Masculine demonym."
+                                                                        }
+                                                                    },
+                                                                    "required": ["f", "m"]
+                                                                }
+                                                            },
+                                                            "flag": {
+                                                                "type": "string",
+                                                                "description": "Emoji flag of the country."
+                                                            },
+                                                            "maps": {
+                                                                "type": "object",
+                                                                "properties": {
+                                                                    "googleMaps": {
+                                                                        "type": "string",
+                                                                        "description": "Google Maps URL for the country."
+                                                                    },
+                                                                    "openStreetMaps": {
+                                                                        "type": "string",
+                                                                        "description": "OpenStreetMap URL for the country."
+                                                                    }
+                                                                },
+                                                                "required": ["googleMaps", "openStreetMaps"]
+                                                            },
+                                                            "population": {
+                                                                "type": "integer",
+                                                                "description": "Population of the country."
+                                                            },
+                                                            "car": {
+                                                                "type": "object",
+                                                                "properties": {
+                                                                    "signs": {
+                                                                        "type": "array",
+                                                                        "items": {
+                                                                            "type": "string",
+                                                                            "description": "Car registration signs."
+                                                                        }
+                                                                    },
+                                                                    "side": {
+                                                                        "type": "string",
+                                                                        "description": "Driving side of the country."
+                                                                    }
+                                                                },
+                                                                "required": ["signs", "side"]
+                                                            },
+                                                            "timezones": {
+                                                                "type": "array",
+                                                                "items": {
+                                                                    "type": "string",
+                                                                    "description": "Timezones of the country."
+                                                                }
+                                                            },
+                                                            "continents": {
+                                                                "type": "array",
+                                                                "items": {
+                                                                    "type": "string",
+                                                                    "description": "Continents the country is located in."
+                                                                }
+                                                            },
+                                                            "flags": {
+                                                                "type": "object",
+                                                                "properties": {
+                                                                    "png": {
+                                                                        "type": "string",
+                                                                        "description": "URL to the PNG flag image."
+                                                                    },
+                                                                    "svg": {
+                                                                        "type": "string",
+                                                                        "description": "URL to the SVG flag image."
+                                                                    }
+                                                                },
+                                                                "required": ["png", "svg"]
+                                                            },
+                                                            "coatOfArms": {
+                                                                "type": "object",
+                                                                "description": "Coat of arms of the country.",
+                                                                "properties": {}
+                                                            },
+                                                            "startOfWeek": {
+                                                                "type": "string",
+                                                                "description": "Start of the week for the country."
+                                                            },
+                                                            "capitalInfo": {
+                                                                "type": "object",
+                                                                "properties": {
+                                                                    "latlng": {
+                                                                        "type": "array",
+                                                                        "items": {
+                                                                            "type": "number",
+                                                                            "description": "Latitude and longitude of the capital city."
+                                                                        }
+                                                                    }
+                                                                },
+                                                                "required": ["latlng"]
+                                                            }
+                                                        },
+                                                        "required": [
+                                                            "name",
+                                                            "tld",
+                                                            "cca2",
+                                                            "ccn3",
+                                                            "cca3",
+                                                            "independent",
+                                                            "status",
+                                                            "unMember",
+                                                            "currencies",
+                                                            "idd",
+                                                            "capital",
+                                                            "altSpellings",
+                                                            "region",
+                                                            "languages",
+                                                            "translations",
+                                                            "latlng",
+                                                            "landlocked",
+                                                            "area",
+                                                            "demonyms",
+                                                            "flag",
+                                                            "maps",
+                                                            "population",
+                                                            "car",
+                                                            "timezones",
+                                                            "continents",
+                                                            "flags",
+                                                            "coatOfArms",
+                                                            "startOfWeek",
+                                                            "capitalInfo"
+                                                        ]
+                                                    }
+                                                },
+                                                "totalPopulation": {
+                                                    "type": "integer",
+                                                    "description": "Total population of all countries in the region."
+                                                }
+                                            },
+                                            "required": ["region", "countries", "totalPopulation"]
+                                        }
+                                    },
+                                    "required": ["message", "data"]
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal server error. The request could not be processed due to an error.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "description": "A message indicating the error."
+                                        },
+                                        "error": {
+                                            "type": "string",
+                                            "description": "Detailed error message."
+                                        }
+                                    },
+                                    "required": ["message", "error"]
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },        
+        "/api/languages": {
+            "get": {
+                "summary": "Aggregated Data for list of languages and where they are spoken",
+                "description": "Retrieve a list of languages with detailed information about the countries where each language is spoken. Optional pagination is supported.",
+                "tags": ["Country"],
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ],
+                "parameters": [
+                    {
+                        "name": "page",
+                        "in": "query",
+                        "description": "The page number for pagination. Defaults to 1 if not provided.",
+                        "required": false,
+                        "schema": {
+                            "type": "integer",
+                            "default": 1
+                        }
+                    },
+                    {
+                        "name": "limit",
+                        "in": "query",
+                        "description": "The number of languages to retrieve per page. Defaults to 10 if not provided.",
+                        "required": false,
+                        "schema": {
+                            "type": "integer",
+                            "default": 10
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful retrieval of languages data.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "language": {
+                                            "type": "string",
+                                            "description": "The language code."
+                                        },
+                                        "countries": {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "object",
+                                                "properties": {
+                                                    "common": {
+                                                        "type": "string",
+                                                        "description": "Common name of the country."
+                                                    },
+                                                    "official": {
+                                                        "type": "string",
+                                                        "description": "Official name of the country."
+                                                    },
+                                                    "nativeName": {
+                                                        "type": "object",
+                                                        "properties": {
+                                                            "eng": {
+                                                                "type": "object",
+                                                                "properties": {
+                                                                    "official": {
+                                                                        "type": "string",
+                                                                        "description": "Official name in English."
+                                                                    },
+                                                                    "common": {
+                                                                        "type": "string",
+                                                                        "description": "Common name in English."
+                                                                    }
+                                                                },
+                                                                "required": ["official", "common"]
+                                                            }
+                                                        }
+                                                    }
+                                                },
+                                                "required": ["common", "official", "nativeName"]
+                                            }
+                                        },
+                                        "totalSpeakers": {
+                                            "type": "integer",
+                                            "description": "Total number of speakers of the language."
+                                        }
+                                    },
+                                    "required": ["language", "countries", "totalSpeakers"]
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal server error. The request could not be processed due to an error.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "description": "A message indicating the error."
+                                        },
+                                        "error": {
+                                            "type": "string",
+                                            "description": "Detailed error message."
+                                        }
+                                    },
+                                    "required": ["message", "error"]
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },        
+        "/api/statistics": {
+            "get": {
+                "summary": "Aggregated Statistics Data",
+                "description": "Retrieve statistical data about countries, including total number of countries, the largest country by area, the smallest country by population, and the most widely spoken language.",
+                "tags": ["Statistics"],
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ],
+                "parameters": [
+                    {
+                        "name": "page",
+                        "in": "query",
+                        "description": "The page number for pagination. Defaults to 1 if not provided.",
+                        "required": false,
+                        "schema": {
+                            "type": "integer",
+                            "default": 1
+                        }
+                    },
+                    {
+                        "name": "limit",
+                        "in": "query",
+                        "description": "The number of records to retrieve per page. Defaults to 10 if not provided.",
+                        "required": false,
+                        "schema": {
+                            "type": "integer",
+                            "default": 10
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful retrieval of statistics data.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "description": "A message indicating successful data retrieval."
+                                        },
+                                        "data": {
+                                            "type": "object",
+                                            "properties": {
+                                                "totalCountries": {
+                                                    "type": "integer",
+                                                    "description": "Total number of countries."
+                                                },
+                                                "largestCountryByArea": {
+                                                    "type": "object",
+                                                    "properties": {
+                                                        "name": {
+                                                            "type": "object",
+                                                            "properties": {
+                                                                "common": {
+                                                                    "type": "string",
+                                                                    "description": "Common name of the country."
+                                                                },
+                                                                "official": {
+                                                                    "type": "string",
+                                                                    "description": "Official name of the country."
+                                                                },
+                                                                "nativeName": {
+                                                                    "type": "object",
+                                                                    "properties": {
+                                                                        "fra": {
+                                                                            "type": "object",
+                                                                            "properties": {
+                                                                                "official": {
+                                                                                    "type": "string",
+                                                                                    "description": "Official name in the native language."
+                                                                                },
+                                                                                "common": {
+                                                                                    "type": "string",
+                                                                                    "description": "Common name in the native language."
+                                                                                }
+                                                                            },
+                                                                            "required": ["official", "common"]
+                                                                        }
+                                                                    },
+                                                                    "required": ["fra"]
+                                                                }
+                                                            },
+                                                            "required": ["common", "official", "nativeName"]
+                                                        },
+                                                        "area": {
+                                                            "type": "integer",
+                                                            "description": "Area of the country in square kilometers."
+                                                        }
+                                                    },
+                                                    "required": ["name", "area"]
+                                                },
+                                                "smallestCountryByPopulation": {
+                                                    "type": "object",
+                                                    "properties": {
+                                                        "name": {
+                                                            "type": "object",
+                                                            "properties": {
+                                                                "common": {
+                                                                    "type": "string",
+                                                                    "description": "Common name of the country."
+                                                                },
+                                                                "official": {
+                                                                    "type": "string",
+                                                                    "description": "Official name of the country."
+                                                                },
+                                                                "nativeName": {
+                                                                    "type": "object",
+                                                                    "properties": {
+                                                                        "eng": {
+                                                                            "type": "object",
+                                                                            "properties": {
+                                                                                "official": {
+                                                                                    "type": "string",
+                                                                                    "description": "Official name in the native language."
+                                                                                },
+                                                                                "common": {
+                                                                                    "type": "string",
+                                                                                    "description": "Common name in the native language."
+                                                                                }
+                                                                            },
+                                                                            "required": ["official", "common"]
+                                                                        }
+                                                                    },
+                                                                    "required": ["eng"]
+                                                                }
+                                                            },
+                                                            "required": ["common", "official", "nativeName"]
+                                                        },
+                                                        "population": {
+                                                            "type": "integer",
+                                                            "description": "Population of the country."
+                                                        }
+                                                    },
+                                                    "required": ["name", "population"]
+                                                },
+                                                "mostWidelySpokenLanguage": {
+                                                    "type": "object",
+                                                    "properties": {
+                                                        "language": {
+                                                            "type": "string",
+                                                            "description": "The most widely spoken language code."
+                                                        },
+                                                        "totalSpeakers": {
+                                                            "type": "integer",
+                                                            "description": "Total number of speakers of the most widely spoken language."
+                                                        }
+                                                    },
+                                                    "required": ["language", "totalSpeakers"]
+                                                }
+                                            },
+                                            "required": ["totalCountries", "largestCountryByArea", "smallestCountryByPopulation", "mostWidelySpokenLanguage"]
+                                        }
+                                    },
+                                    "required": ["message", "data"]
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal server error. The request could not be processed due to an error.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "description": "A message indicating the error."
+                                        },
+                                        "error": {
+                                            "type": "string",
+                                            "description": "Detailed error message."
+                                        }
+                                    },
+                                    "required": ["message", "error"]
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }        
+    },
+    "components": {
+        "securitySchemes": {
+            "bearerAuth": {
+                "type": "http",
+                "scheme": "bearer",
+                "bearerFormat": "JWT"
+            }
+        }
+    },
+    "definitions": {
+        "Country": {
+            "type": "object",
+            "properties": {
+                "name": {
+                    "type": "object",
+                    "properties": {
+                        "common": {
+                            "type": "string",
+                            "description": "The common name of the country."
+                        },
+                        "official": {
+                            "type": "string",
+                            "description": "The official name of the country."
+                        },
+                        "nativeName": {
+                            "type": "object",
+                            "description": "The native names of the country in different languages.",
+                            "additionalProperties": {
+                                "type": "object",
+                                "properties": {
+                                    "official": {
+                                        "type": "string",
+                                        "description": "The official name in the native language."
+                                    },
+                                    "common": {
+                                        "type": "string",
+                                        "description": "The common name in the native language."
+                                    }
+                                },
+                                "required": [
+                                    "official",
+                                    "common"
+                                ]
+                            }
+                        }
+                    },
+                    "required": [
+                        "common",
+                        "official",
+                        "nativeName"
+                    ]
+                },
+                "tld": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    },
+                    "description": "The top-level domain of the country."
+                },
+                "cca2": {
+                    "type": "string",
+                    "description": "The 2-letter country code."
+                },
+                "ccn3": {
+                    "type": "string",
+                    "description": "The 3-digit country code."
+                },
+                "cca3": {
+                    "type": "string",
+                    "description": "The 3-letter country code."
+                },
+                "cioc": {
+                    "type": "string",
+                    "description": "The CIOC code for the country."
+                },
+                "independent": {
+                    "type": "boolean",
+                    "description": "Indicates if the country is independent."
+                },
+                "status": {
+                    "type": "string",
+                    "description": "The status of the country."
+                },
+                "unMember": {
+                    "type": "boolean",
+                    "description": "Indicates if the country is a member of the United Nations."
+                },
+                "currencies": {
+                    "type": "object",
+                    "description": "The currencies used in the country.",
+                    "additionalProperties": {
+                        "type": "object",
+                        "properties": {
+                            "name": {
+                                "type": "string",
+                                "description": "The name of the currency."
+                            },
+                            "symbol": {
+                                "type": "string",
+                                "description": "The symbol of the currency."
+                            }
+                        },
+                        "required": [
+                            "name",
+                            "symbol"
+                        ]
+                    }
+                },
+                "idd": {
+                    "type": "object",
+                    "properties": {
+                        "root": {
+                            "type": "string",
+                            "description": "The root dialing code."
+                        },
+                        "suffixes": {
+                            "type": "array",
+                            "items": {
+                                "type": "string"
+                            },
+                            "description": "The suffixes for the dialing code."
+                        }
+                    },
+                    "required": [
+                        "root",
+                        "suffixes"
+                    ]
+                },
+                "capital": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    },
+                    "description": "The capital city or cities of the country."
+                },
+                "altSpellings": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    },
+                    "description": "Alternative spellings of the country name."
+                },
+                "region": {
+                    "type": "string",
+                    "description": "The region where the country is located."
+                },
+                "subregion": {
+                    "type": "string",
+                    "description": "The subregion where the country is located."
+                },
+                "languages": {
+                    "type": "object",
+                    "description": "Languages spoken in the country.",
+                    "additionalProperties": {
+                        "type": "string"
+                    }
+                },
+                "translations": {
+                    "type": "object",
+                    "description": "Translations of the country name in different languages.",
+                    "additionalProperties": {
+                        "type": "object",
+                        "properties": {
+                            "official": {
+                                "type": "string",
+                                "description": "The official name in the translated language."
+                            },
+                            "common": {
+                                "type": "string",
+                                "description": "The common name in the translated language."
+                            }
+                        },
+                        "required": [
+                            "official",
+                            "common"
+                        ]
+                    }
+                },
+                "latlng": {
+                    "type": "array",
+                    "items": {
+                        "type": "number"
+                    },
+                    "description": "Latitude and longitude coordinates of the country."
+                },
+                "landlocked": {
+                    "type": "boolean",
+                    "description": "Indicates if the country is landlocked."
+                },
+                "borders": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    },
+                    "description": "The countries that border the country."
+                },
+                "area": {
+                    "type": "number",
+                    "description": "The total area of the country."
+                },
+                "demonym": {
+                    "type": "object",
+                    "description": "Demonym for the country in different languages.",
+                    "additionalProperties": {
+                        "type": "object",
+                        "properties": {
+                            "f": {
+                                "type": "string",
+                                "description": "The female demonym."
+                            },
+                            "m": {
+                                "type": "string",
+                                "description": "The male demonym."
+                            }
+                        },
+                        "required": [
+                            "f",
+                            "m"
+                        ]
+                    }
+                },
+                "gini": {
+                    "type": "object",
+                    "description": "Gini index of the country.",
+                    "additionalProperties": {
+                        "type": "number"
+                    }
+                },
+                "timezones": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    },
+                    "description": "The timezones of the country."
+                },
+                "continents": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    },
+                    "description": "Continents the country is part of."
+                },
+                "car": {
+                    "type": "object",
+                    "description": "Car-related information for the country.",
+                    "properties": {
+                        "signs": {
+                            "type": "array",
+                            "items": {
+                                "type": "string"
+                            },
+                            "description": "Road signs used in the country."
+                        },
+                        "side": {
+                            "type": "string",
+                            "description": "The side of the road people drive on."
+                        }
+                    },
+                    "required": [
+                        "signs",
+                        "side"
+                    ]
+                },
+                "flag": {
+                    "type": "string",
+                    "description": "URL of the country flag image."
+                },
+                "maps": {
+                    "type": "object",
+                    "description": "Map URLs for the country.",
+                    "properties": {
+                        "googleMaps": {
+                            "type": "string",
+                            "description": "Google Maps URL for the country."
+                        },
+                        "openStreetMaps": {
+                            "type": "string",
+                            "description": "OpenStreetMaps URL for the country."
+                        }
+                    },
+                    "required": [
+                        "googleMaps",
+                        "openStreetMaps"
+                    ]
+                },
+                "coatOfArms": {
+                    "type": "object",
+                    "description": "Coat of arms of the country.",
+                    "properties": {
+                        "png": {
+                            "type": "string",
+                            "description": "URL of the PNG coat of arms image."
+                        },
+                        "svg": {
+                            "type": "string",
+                            "description": "URL of the SVG coat of arms image."
+                        }
+                    }
+                },
+                "startOfWeek": {
+                    "type": "string",
+                    "description": "The start of the week in the country."
+                },
+                "capitalInfo": {
+                    "type": "object",
+                    "description": "Capital city information.",
+                    "properties": {
+                        "latlng": {
+                            "type": "array",
+                            "items": {
+                                "type": "number"
+                            },
+                            "description": "Latitude and longitude coordinates of the capital city."
+                        }
+                    },
+                    "required": [
+                        "latlng"
+                    ]
+                }
+            }
+        }
+    }
+}
