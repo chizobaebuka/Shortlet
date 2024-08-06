@@ -44,8 +44,23 @@ Environment Configuration: Managed through .env files, with different settings f
 Build and Run Scripts: Defined npm scripts to handle building, migrating, and seeding the database, as well as running the server.
 This approach ensures a well-structured, secure, and performant REST API that efficiently handles and serves country data while providing a clear and maintainable codebase.
 
+BASE_URL: The base URL for the application (default is `http://localhost:8080`).
 
-STEPS to RUN THE PROJECT  
+STEPS TAKEN TO START THE PROJECT
+1. Create the Country Table Model
+2. Create a database on postgres called shortlet_db to store the country table 
+3. After creating the table on the database, to migrate the table to the database
+4. create a migration file to the effect by running the commands below for both Users and Country Table and this would create the migration file then you comfigure the migration file with your table information 
+npx sequelize-cli migration:generate --name create-countries-table
+npx sequelize-cli migration:generate --name create-users-table
+5. After step 4, run the command below to migrate the table to the database
+### run npx sequelize-cli db:migrate 
+6. You would need to hit the api to (migrateDatatoDB) BASE_URL/api/migrate
+7. Perform the other operations as seen **ENDPOINTS** to get the desired results 
+8. Refer to the documentation at http://localhost:8080/api-docs 
+
+
+STEPS TO RUN THE PROJECT  
 1. Clone the repo
 2. install dependencies
     npm install
@@ -56,19 +71,19 @@ STEPS to RUN THE PROJECT
     npm run dev
 
 ENDPOINTS: 
-1. GET All Countries: GET http://localhost:8080/api/countries
+1. GET All Countries: GET BASE_URL/api/countries
     Retrieve all countries paginated and with filters
-2. GET Country By Code: GET http://localhost:8080/api/countries/:{code}
+2. GET Country By Code: GET BASE_URL/api/countries/:{code}
     Retrieve detailed information for a specific country, including its languages, population, area, and bordering countries
-3. GET Regions: http://localhost:8080/api/regions
+3. GET Regions: BASE_URL/api/regions
     Retrieve a list of regions and the countries within each region, with additional aggregated data such as the total population of the region.
-4. GET Languages: http://localhost:8080/api/languages
+4. GET Languages: BASE_URL/api/languages
     Retrieve a list of languages and the countries where they are spoken. Include the total number of speakers globally for each language.
-5. GET Statistics: http://localhost:8080/api/statistics
+5. GET Statistics: BASE_URL/api/statistics
     Provide aggregated statistics such as the total number of countries, the largest country by area, the smallest by population, and the most widely spoken language.
-4. POST Create User: POST http://localhost:8080/api/auth/create
+4. POST Create User: POST BASE_URL/api/auth/create
     Create a User in the db for security of the api 
-5. POST Login User: POST http://localhost:8080/api/auth/login
+5. POST Login User: POST BASE_URL/api/auth/login
     Login the user and then access the secured apis with the logged in user
 
 

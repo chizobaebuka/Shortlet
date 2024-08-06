@@ -169,11 +169,14 @@ const fetchCountryDetails = async (code: string): Promise<any> => {
     const cachedData = await redisClient.get(cacheKey);
 
     if (cachedData) {
-      console.log('Returning country details from cache');
+      logger.info('Returning country details from cache');
       return JSON.parse(cachedData);
     }
 
-    let url = `${API_URL}/alpha/${code}`;
+    const url = `${API_URL}/alpha/:${code}`;
+    console.log({ url })
+
+    // Fetch data from the REST Countries API
     const response = await axios.get(url);
     const data = response.data;
 

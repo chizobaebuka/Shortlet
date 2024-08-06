@@ -26,7 +26,6 @@ export const authenticateToken = (req: AuthenticatedRequest, res: Response, next
         }
 
         req.user = user as { id: number; email: string; role: 'admin' | 'user' };
-        console.log(`Authenticated user: ${JSON.stringify(req.user)}`);
         next();
     });
 };

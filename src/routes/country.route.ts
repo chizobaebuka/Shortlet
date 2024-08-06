@@ -5,7 +5,7 @@ import authorizeRole, { authenticateToken } from '../middleware/auth';
 const router = express.Router();
 
 router.post('/migrate', authenticateToken, authorizeRole(['admin']), countryController.migrateDatatoDB);
-router.get('/countries', authenticateToken, countryController.fetchAllCountries); // needs modification to return info by both the filter and the fields if provided
+router.get('/countries', authenticateToken, countryController.fetchAllCountries); 
 router.get('/countries/:code', authenticateToken, countryController.fetchCountryDetails);
 router.get('/regions', authenticateToken, countryController.getRegions);
 router.get('/languages', authenticateToken, countryController.getLanguages);

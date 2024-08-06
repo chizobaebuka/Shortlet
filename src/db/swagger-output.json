@@ -500,7 +500,7 @@
                 "parameters": [
                     {
                         "name": "code",
-                        "in": "query",
+                        "in": "path",
                         "description": "Filter countries by code.",
                         "required": false,
                         "schema": {
