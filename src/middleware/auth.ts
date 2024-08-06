@@ -31,7 +31,7 @@ export const authenticateToken = (req: AuthenticatedRequest, res: Response, next
 };
 
 // Middleware to authorize user role
-const authorizeRole = (roles: ('admin' | 'user')[]) => (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
+export const authorizeRole = (roles: ('admin' | 'user')[]) => (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
     if (req.user) {
         if (roles.includes(req.user.role)) {
             next();
@@ -43,5 +43,3 @@ const authorizeRole = (roles: ('admin' | 'user')[]) => (req: AuthenticatedReques
         res.sendStatus(403);
     }
 };
-
-export default authorizeRole;

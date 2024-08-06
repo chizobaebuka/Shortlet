@@ -1,6 +1,6 @@
 import express from 'express';
 import countryController from '../controllers/countryCtrl';
-import authorizeRole, { authenticateToken } from '../middleware/auth';
+import { authenticateToken, authorizeRole } from '../middleware/auth';
 
 const router = express.Router();
 
