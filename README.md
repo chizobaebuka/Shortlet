@@ -55,7 +55,7 @@ npx sequelize-cli migration:generate --name create-countries-table
 npx sequelize-cli migration:generate --name create-users-table
 5. After step 4, run the command below to migrate the table to the database
 ### run npx sequelize-cli db:migrate 
-6. You would need to hit the api to (migrateDatatoDB) BASE_URL/api/migrate
+6. You would need to hit the api to (migrateDatatoDB) BASE_URL/api/migrate 
 7. Perform the other operations as seen **ENDPOINTS** to get the desired results 
 8. Refer to the documentation at http://localhost:8080/api-docs 
 
