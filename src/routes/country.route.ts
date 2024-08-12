@@ -4,7 +4,7 @@ import { authenticateToken, authorizeRole } from '../middleware/auth';
 
 const router = express.Router();
 
-router.post('/migrate', authenticateToken, authorizeRole(['admin']), countryController.migrateDatatoDB);
+router.post('/migrate', countryController.migrateDatatoDB);
 router.get('/countries', authenticateToken, countryController.fetchAllCountries); 
 router.get('/countries/:code', authenticateToken, countryController.fetchCountryDetails);
 router.get('/regions', authenticateToken, countryController.getRegions);
