@@ -1,5 +1,6 @@
 import { Request, Response, NextFunction } from 'express';
 import jwt from 'jsonwebtoken';
+import logger from '../utils/logger';
 
 interface AuthenticatedRequest extends Request {
     user?: {
@@ -15,13 +16,13 @@ export const authenticateToken = (req: AuthenticatedRequest, res: Response, next
     const token = authHeader && authHeader.split(' ')[1];
 
     if (!token) {
-        console.log('Token is missing');
+        logger.warn('Token is missing');
         return res.status(401).json({ error: 'Token is required' });
     }
 
     jwt.verify(token, process.env.JWT_SECRET_KEY as string, (err, user) => {
         if (err) {
-            console.error('Token verification failed:', err.message);
+            logger.warn('Token verification failed', { error: err.message });
             return res.status(403).json({ error: 'Forbidden' });
         }
 
@@ -36,7 +37,7 @@ export const authorizeRole = (roles: ('admin' | 'user')[]) => (req: Authenticate
         if (roles.includes(req.user.role)) {
             next();
         } else {
-            console.log(`User role ${req.user.role} does not have access`);
+            logger.warn(`User role ${req.user.role} does not have access`);
             res.sendStatus(403);
         }
     } else {

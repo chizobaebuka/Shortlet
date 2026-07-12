@@ -1,109 +1,189 @@
 # Shortlet
 
-## PACKAGES USED
-npm install axios cors dotenv express pg pg-hstore sequelize jsonwebtoken bcrypt swagger-jsdoc swagger-ui-express redis
-npm install --save-dev @types/cors @types/express @types/node nodemon sequelize-cli ts-node typescript @types/jsonwebtoken @types/redis
+A TypeScript/Express REST API that mirrors [REST Countries](https://restcountries.com) data into PostgreSQL and exposes it through indexed, paginated, Redis-cached endpoints (countries, regions, languages, aggregate statistics), behind JWT auth.
 
-## DATABASE SETUP
-1. Generate migrations for creating tables 
-npx sequelize-cli migration:generate --name create-countries-table
-npx sequelize-cli migration:generate --name create-users-table
+## Architecture
 
-2. Run database migrations:
-npx sequelize-cli db:migrate
+```
+                 ┌────────────┐   /api/migrate   ┌──────────────────┐
+                 │  REST       │ ───────────────▶ │ externalApiService│
+                 │  Countries  │                  │  (upsert)         │
+                 │  API        │                  └─────────┬────────┘
+                 └────────────┘                              │
+                                                               ▼
+Client ──▶ Express ──▶ rate limit / helmet / compression ──▶ Postgres ("countryData")
+                              │                                 ▲
+                              ▼                                 │
+                        countryService  ◀── cache-aside ──▶ Redis
+```
 
-## OVERVIEW OF THE IMPLEMENTATION APPROACH
+**Reads never touch the external API.** `GET /api/countries`, `/countries/:code`, `/regions`, `/languages` and `/statistics` all run indexed queries against Postgres, with Redis as a cache-aside layer (`countryService.ts`). The external REST Countries API is only ever called by `POST /api/migrate`, which bulk-upserts the latest data into Postgres. This keeps the read path fast and independent of a third party's uptime, and lets it scale with normal DB/cache scaling techniques instead of being bottlenecked by an outside API.
 
-The implementation of the Shortlet project involves building a REST API using TypeScript with Node.js and Express. The API integrates data from the REST Countries API, processes it, and exposes it through various endpoints. Here’s a detailed overview of the approach taken:
+## Tech stack
 
-PROJECT STRUCTURE
-Source Code Organization:
-src: Contains TypeScript source files, including controllers, services, and models.
-db: Houses database-related files such as migrations, seeders, and model definitions.
-config: Holds configuration files for database connections and other environment-specific settings.
-Separation of Concerns:
-Controllers: Handle incoming requests, process data, and send responses.
-Services: Contain business logic and interact with repositories to fetch and manipulate data.
+- **Runtime**: Node.js, TypeScript, Express
+- **Database**: PostgreSQL via Sequelize (indexed, pooled connections)
+- **Cache**: Redis (cache-aside, best-effort — a Redis outage degrades to DB-only instead of failing requests)
+- **Auth**: JWT (`jsonwebtoken`), bcrypt password hashing, Zod request validation
+- **Hardening**: Helmet, gzip compression, rate limiting, request size limits, graceful shutdown, liveness/readiness probes
+- **Docs**: OpenAPI/Swagger at `/api-docs` (generated via `swagger-autogen`)
 
-DATA INTEGRATION
-Fetching Data: Data is retrieved from the REST Countries API using Axios, a promise-based HTTP client.
-Data Processing: The fetched data is processed and transformed into a format suitable for storage and API responses.
-Data Storage: Data is stored in a PostgreSQL database using Sequelize, allowing for efficient querying and management.
+## Getting started
 
-SECURITY
-User Authentication: Implemented using JWT for secure access to protected routes.
-Data Validation: Ensured using Zod to validate incoming data and prevent potential security issues.
+### Prerequisites
 
-API ENDPOINTS
-Design: Endpoints are designed to provide detailed and aggregated information about countries, regions, and languages.
-Pagination and Filtering: Implemented to handle large datasets efficiently and allow users to filter data based on region or population size.
-Detailed Endpoints: Provide comprehensive information about specific countries, including languages, population, and bordering countries.
+- Node.js 20+
+- PostgreSQL 14+
+- Redis 6+
 
-DEPLOYMENT AND CONFIGURATION
-Environment Configuration: Managed through .env files, with different settings for development and production environments.
-Build and Run Scripts: Defined npm scripts to handle building, migrating, and seeding the database, as well as running the server.
-This approach ensures a well-structured, secure, and performant REST API that efficiently handles and serves country data while providing a clear and maintainable codebase.
+(Or skip the two above and use `docker compose up`, see [Running with Docker](#running-with-docker).)
 
-BASE_URL: The base URL for the application (default is `http://localhost:8080`).
+### Environment variables
 
-STEPS TAKEN TO START THE PROJECT
-1. Create the Country Table Model
-2. Create a database on postgres called shortlet_db to store the country table 
-3. After creating the table on the database, to migrate the table to the database
-4. create a migration file to the effect by running the commands below for both Users and Country Table and this would create the migration file then you comfigure the migration file with your table information 
-npx sequelize-cli migration:generate --name create-countries-table
-npx sequelize-cli migration:generate --name create-users-table
-5. After step 4, run the command below to migrate the table to the database
-### run npx sequelize-cli db:migrate 
-6. You would need to hit the api to (migrateDatatoDB) BASE_URL/api/migrate 
-7. Perform the other operations as seen **ENDPOINTS** to get the desired results 
-8. Refer to the documentation at http://localhost:8080/api-docs 
+Copy `.env.sample` to `.env` and fill in your values:
 
+| Variable | Required | Default | Notes |
+|---|---|---|---|
+| `NODE_ENV` | no | `development` | `development` \| `test` \| `production` |
+| `DB_HOST` | yes | — | Postgres host |
+| `DB_PORT` | no | `5432` | Postgres port |
+| `DB_USER` | yes | — | Postgres user |
+| `DB_PASSWORD` | yes | — | Postgres password |
+| `DB_NAME` | yes | — | Postgres database name |
+| `DB_SSL` | no | `false` | Set `true` for hosted Postgres requiring SSL (RDS, Heroku, etc.) |
+| `DB_POOL_MAX` | no | `10` | Max pooled connections *per app instance* |
+| `DB_POOL_MIN` | no | `2` | Min pooled connections kept warm |
+| `JWT_SECRET_KEY` | yes | — | Secret used to sign JWTs |
+| `JWT_EXPIRES_IN` | yes | — | e.g. `1h`, `7d` |
+| `PORT` | no | `8080` | HTTP port |
+| `API_URL` | yes | — | REST Countries base URL (only used by `/api/migrate`) |
+| `REDIS_URL` | no | `redis://localhost:6379` | Redis connection string |
+| `LOG_LEVEL` | no | `info` | Winston log level |
 
-STEPS TO RUN THE PROJECT  
-1. Clone the repo
-2. install dependencies
-    npm install
-3. Using the .env.sample you would see a copy of the env, configure yours alike 
-4. Build the project  
-    npm run build / npx tsc
-5. Start the server in dev mode  
-    npm run dev
+Missing required variables fail the process at boot (see `src/config/env.ts`) rather than failing deep inside a request handler.
 
-ENDPOINTS: 
-1. GET All Countries: GET BASE_URL/api/countries
-    Retrieve all countries paginated and with filters
-2. GET Country By Code: GET BASE_URL/api/countries/:{code}
-    Retrieve detailed information for a specific country, including its languages, population, area, and bordering countries
-3. GET Regions: BASE_URL/api/regions
-    Retrieve a list of regions and the countries within each region, with additional aggregated data such as the total population of the region.
-4. GET Languages: BASE_URL/api/languages
-    Retrieve a list of languages and the countries where they are spoken. Include the total number of speakers globally for each language.
-5. GET Statistics: BASE_URL/api/statistics
-    Provide aggregated statistics such as the total number of countries, the largest country by area, the smallest by population, and the most widely spoken language.
-4. POST Create User: POST BASE_URL/api/auth/create
-    Create a User in the db for security of the api 
-5. POST Login User: POST BASE_URL/api/auth/login
-    Login the user and then access the secured apis with the logged in user
+### Run locally (native)
 
+```bash
+npm install
+npm run build           # compiles src -> dist
+npm run migrate          # creates/updates the countryData & users tables + indexes
+npm run dev               # ts-node + nodemon, for local development
+# or, to run the compiled build:
+npm start
+```
 
-CHALLENGES & SOLUTIONS
-Initial Issues with Null Values on the migrated data:
-Problem: During the initial data migration, several fields in the database contained null values. This issue stemmed from incorrect mapping between the properties defined in the Sequelize model and the fields present in the REST Countries API response.
+### Running with Docker
 
-Solution: To address this, I conducted a detailed review of the API response structure and compared it with the database schema. This involved updating the mapping logic to ensure that all properties were accurately referenced and assigned. Implemented additional checks and logging to identify and resolve any discrepancies between the data received and the data stored.
+```bash
+docker compose up --build
+```
 
+This starts the app, Postgres, and Redis together, with healthchecks gating startup order. Run migrations against the compose stack with:
 
-USING REDIS FOR DATA CACHING
-1. start redis if already installed  - brew services start redis
-2. if redis is not installed - brew install redis
-3. create the testRedis file to test the redis connection 
-    npx ts-node testRedis
-4. create the redisClient file and run 
-    redis-server
-5. implemented caching strategy across service layer for optimizing performance 
+```bash
+docker compose exec app npm run migrate
+```
 
-IMPLEMENTING LOGGING
-1. install npm install winston morgan
-2. create the logger file and configure the logger
-3. implemented logging across the service layer for debugging and monitoring purposes
+Scale the API horizontally (it's stateless — all state lives in Postgres/Redis):
+
+```bash
+docker compose up --scale app=3
+```
+(put a load balancer in front to distribute traffic across replicas)
+
+### Populate the database
+
+Once the server is running, trigger a data pull from REST Countries into Postgres:
+
+```bash
+curl -X POST http://localhost:8080/api/migrate
+```
+
+This is a bulk **upsert** keyed on `alpha3Code` (unique-indexed) — safe to re-run any time to refresh data; it will not create duplicate rows.
+
+> **Known limitation:** REST Countries has deprecated the `v3.1` API this project targets, in favor of `v5`. Until `API_URL`/`externalApiService.ts` are updated to the new contract, `/api/migrate` will fail against the live service. Reads (`/countries`, `/regions`, etc.) are unaffected as long as Postgres already has data from a prior successful migration.
+
+## Scaling notes
+
+- **DB reads are indexed and paginated at the query level** (`LIMIT`/`OFFSET`/`WHERE`), not filtered/sliced in application memory — indexes exist on `alpha3Code` (unique), `alpha2Code`, `region`, and `population`.
+- **Connection pooling** is configured (`DB_POOL_MAX`/`DB_POOL_MIN`) instead of relying on Sequelize's defaults, and SQL logging is disabled outside development.
+- **Redis caching is cache-aside and best-effort**: a Redis outage degrades to direct-DB reads rather than 500ing requests.
+- **The app is stateless** — no in-memory session state — so it scales horizontally behind a load balancer; Postgres and Redis are the only shared state.
+- **Rate limiting** protects the API generally (100 req/min/IP) and `POST /api/migrate` specifically (2 req/min/IP), since that endpoint triggers an expensive external fetch + bulk DB write and has no auth in front of it.
+- **Compression** (gzip) and a bounded JSON body size (1MB) reduce bandwidth and cap request cost.
+- **Liveness/readiness endpoints** (`/health`, `/ready`) let load balancers and orchestrators (k8s, ECS, etc.) route traffic only to instances that can actually reach Postgres and Redis.
+- **Graceful shutdown** on `SIGTERM`/`SIGINT` stops accepting new connections and closes DB/Redis connections cleanly, so rolling deploys/restarts don't drop in-flight requests.
+
+## API reference
+
+Base URL: `http://localhost:8080` (or your `PORT`/deployment host)
+
+All `/api/*` routes except `/api/auth/*` and `POST /api/migrate` require `Authorization: Bearer <token>`.
+
+### Auth
+
+| Method | Path | Auth | Description |
+|---|---|---|---|
+| POST | `/api/auth/create` | no | Create a user. Body: `{ username, email, password, role? }` |
+| POST | `/api/auth/login` | no | Log in. Body: `{ email, password }` → `{ token, user }` |
+| GET | `/api/auth/` | no | List all users |
+| POST | `/api/auth/logout` | no | Clear the client's token cookie |
+
+### Countries
+
+| Method | Path | Auth | Description |
+|---|---|---|---|
+| POST | `/api/migrate` | no (rate-limited) | Pull all countries from REST Countries and upsert into Postgres |
+| GET | `/api/countries` | yes | Paginated countries. Query: `page`, `limit`, `region`, `population`, `fields` (comma-separated column projection) |
+| GET | `/api/countries/:code` | yes | Single country by alpha-2 or alpha-3 code (case-insensitive). 404 if not found |
+| GET | `/api/regions` | yes | Regions with member countries and total population, paginated by region. Query: `page`, `limit` |
+| GET | `/api/languages` | yes | Languages with speaking countries and total speakers, paginated by language. Query: `page`, `limit` |
+| GET | `/api/statistics` | yes | Global aggregate: total countries, largest by area, smallest by population, most widely spoken language |
+
+### Ops
+
+| Method | Path | Auth | Description |
+|---|---|---|---|
+| GET | `/health` | no | Liveness — process is up |
+| GET | `/ready` | no | Readiness — checks Postgres + Redis, `200`/`503` |
+| GET | `/api-docs` | no | Swagger UI |
+
+## Database migrations
+
+```bash
+npm run migration:generate -- --name my-migration   # scaffold a new migration
+npm run migrate                                      # apply pending migrations
+npm run seed                                          # run seeders, if any
+```
+
+Migrations live in `src/db/migrations`; Sequelize CLI config is `src/db/config/config.js` (reads the same env vars as the app).
+
+## Project structure
+
+```
+src/
+  app.ts               Express app: middleware, routes, error handling
+  index.ts             Process entrypoint: boot, connections, graceful shutdown
+  config/env.ts         Startup env validation (zod)
+  controllers/          Request/response handling
+  services/
+    externalApiService.ts   External REST Countries API + migration/upsert
+    countryService.ts       DB-backed, Redis-cached reads
+  db/
+    sequelize.ts         Sequelize instance (pool, SSL, logging)
+    redisClient.ts        Redis client (reconnect strategy)
+    models/                Sequelize models
+    migrations/            Sequelize migrations
+  middleware/            auth (JWT), rate limiting
+  utils/
+    cache.ts              Safe Redis get/set wrapper (best-effort)
+    logger.ts              Winston logger
+    helpers.ts              JWT signing
+  validation/            Zod request schemas
+  routes/                 Express routers
+```
+
+## License
+
+See [LICENSE](./LICENSE).

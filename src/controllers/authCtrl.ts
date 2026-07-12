@@ -4,6 +4,7 @@ import { Request, Response } from 'express';
 import { signUpUserSchema } from "../validation/user.validation";
 import User from "../db/models/user";
 import { generateToken } from "../utils/helpers";
+import logger from "../utils/logger";
 
 
 export const signupUser = async (req: Request<{}, {}, ISignupRequest>, res: Response) => {
@@ -69,7 +70,7 @@ export const getAllUsers = async (req: Request, res: Response) => {
         const users = await User.findAll();
         res.status(200).json(users);
     } catch (error: any) {
-        console.error('Error getting all users:', error);
+        logger.error('Error getting all users', { error: error.message });
         res.status(500).json({ error: 'Internal Server Error' });
     }
 }
@@ -77,8 +78,8 @@ export const logoutUser = async (req: Request, res: Response) => {
     try {
         res.clearCookie('token');
         res.status(200).json({ message: 'User logged out successfully' });
-    } catch (error) {
-        console.error('Error logging out user:', error);
+    } catch (error: any) {
+        logger.error('Error logging out user', { error: error.message });
         res.status(500).json({ error: 'Internal Server Error' });
     }
 }

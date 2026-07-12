@@ -58,6 +58,7 @@ Country.init({
   alpha3Code: {
     type: DataTypes.STRING,
     allowNull: false,
+    unique: true,
   },
   callingCodes: {
     type: DataTypes.ARRAY(DataTypes.STRING),
@@ -171,6 +172,12 @@ Country.init({
   sequelize,
   tableName: 'countryData',
   timestamps: true,
+  indexes: [
+    { unique: true, fields: ['alpha3Code'] },
+    { fields: ['alpha2Code'] },
+    { fields: ['region'] },
+    { fields: ['population'] },
+  ],
 });
 
 export default Country;

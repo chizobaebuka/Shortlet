@@ -1,13 +1,16 @@
 import { Request, Response } from "express";
 import externalApiService from "../services/externalApiService";
+import countryService from "../services/countryService";
 import logger from "../utils/logger";
 
 class CountryController {
   async migrateDatatoDB(req: Request, res: Response) {
     try {
-      await externalApiService.migrateCountriesData();
+      const result = await externalApiService.migrateCountriesData();
+      logger.info('Country data migration completed', result);
+      return res.status(200).json({ message: "Data migration completed", ...result });
     } catch (err: any) {
-      console.error("Error migrating data:", err.message);
+      logger.error("Error migrating data", { error: err.message });
       return res.status(500).json({
         message: "Error migrating data",
         error: err.message,
@@ -26,7 +29,7 @@ class CountryController {
         ? parseInt(req.query.population as string, 10)
         : undefined;
 
-      const countries = await externalApiService.fetchAllCountries({
+      const countries = await countryService.fetchAllCountries({
         page,
         limit,
         fields,
@@ -35,10 +38,10 @@ class CountryController {
       });
 
       logger.info('Fetched countries data successfully')
-      
+
       res.status(200).json(countries);
     } catch (err: any) {
-      console.error("Error fetching countries", err);
+      logger.error("Error fetching countries", { error: err.message });
       res
         .status(500)
         .json({ message: "An error occurred while fetching countries" });
@@ -48,18 +51,18 @@ class CountryController {
   public async fetchCountryDetails(req: Request, res: Response): Promise<void> {
     try {
       const code = req.params.code;
-      const country = await externalApiService.fetchCountryDetails(code);
+      const country = await countryService.fetchCountryDetails(code);
 
-      logger.info(`Fetched country information by code: ${code}`, { country });
-
-      if (!country || country.length === 0) {
+      if (!country) {
         res.status(404).json({ message: "Country not found" });
         return;
       }
 
+      logger.info(`Fetched country information by code: ${code}`);
+
       res.status(200).json(country);
     } catch (err: any) {
-      console.error("Error fetching country details", err);
+      logger.error("Error fetching country details", { error: err.message });
       res
         .status(500)
         .json({ message: "An error occurred while fetching country details" });
@@ -71,7 +74,7 @@ class CountryController {
       const page = Number(req.query.page) || 1;
       const limit = Number(req.query.limit) || 10;
 
-      const regionsData = await externalApiService.getRegions({ page, limit });
+      const regionsData = await countryService.getRegions({ page, limit });
       logger.info('Successfully fetched regions data', { regionsData });
 
       return res.status(200).json({
@@ -92,11 +95,11 @@ class CountryController {
       const page = Number(req.query.page) || 1;
       const limit = Number(req.query.limit) || 10;
 
-      const languagesData = await externalApiService.getLanguagesData({
+      const languagesData = await countryService.getLanguagesData({
         page,
         limit,
       });
-      logger.info('Successfully fetched languages data', { languagesData });
+      logger.info('Successfully fetched languages data');
 
       return res.status(200).json({
         message: "Languages data fetched successfully",
@@ -113,22 +116,19 @@ class CountryController {
 
   async getStatistics(req: Request, res: Response) {
     try {
-      const page = Number(req.query.page) || 1;
-      const limit = Number(req.query.limit) || 10;
-
-      const statisticsData = await externalApiService.getStatistics({
-        page,
-        limit,
-      });
-      logger.info(`statisticsData fetched successfully`, { statisticsData })
+      // Statistics are a global aggregate over the whole dataset, so
+      // pagination doesn't apply here (it previously computed stats over
+      // only one page of results, which was incorrect).
+      const statisticsData = await countryService.getStatistics();
+      logger.info('statisticsData fetched successfully');
 
       return res.status(200).json({
         message: "Statistics data fetched successfully",
         data: statisticsData,
       });
-      
+
     } catch (err: any) {
-      console.error("Error fetching statistics data:", err.message);
+      logger.error("Error fetching statistics data", { error: err.message });
       return res.status(500).json({
         message: "Error fetching statistics data",
         error: err.message,
